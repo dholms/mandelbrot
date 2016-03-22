@@ -23,7 +23,7 @@ var processClick = function(e){
     var x = e.offsetX;
     var y = e.offsetY;
     var oldvalues = values;
-    var currWidth = startingWidth/Math.pow(6, zoomLevel);
+    var currWidth = startingWidth/Math.pow(8, zoomLevel);
     createGrid([values[x][y][0], values[x][y][1]], currWidth);
     // for(var i = 0; i < values.length; i++){
     //     for(var j = 0; j < values[0].length; j++){
