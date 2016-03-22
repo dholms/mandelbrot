@@ -2,52 +2,55 @@ var canvas;
 var context;
 var values = [];
 var grid = [];
-var height;
-var width;
 var iterations = 256;
 var ratio;
 
 $(document).ready(function(){
     canvas = document.getElementById("c");
     context = canvas.getContext("2d");
-    height = window.innerHeight;
-    width = window.innerWidth;
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    createGrid([0,0], 5);
+    colorGrid();
+});
 
-    createGrid();
+var createGrid = function(center, width){
+    var height = canvas.height * width / canvas.width;
+    topleft = [center[0]-width/2, center[1]+height/2];
 
+    var incr = width/canvas.width;
+    for(var i = 0; i < canvas.width; i++){
+        var valueRow = []
+        var gridRow = []
+        for(var j = 0; j < canvas.height; j++){
+            var x = topleft[0] + i*incr;
+            var y = topleft[1] - j*incr;
+            valueRow.push([x,y]);
+            gridRow.push(-1);
+        }
+        values.push(valueRow);
+        grid.push(gridRow);
+    }
+}
+
+var colorGrid = function(){
     var max = 0;
-    for(var i = 0; i < width; i++){
-        for(var j = 0; j < height; j++){
+    for(var i = 0; i < values.length; i++){
+        for(var j = 0; j < values[0].length; j++){
             var iter = getIter(values[i][j]);
             max = Math.max(max, iter);
             grid[i][j] = iter;
         }
     }
-    console.log(grid);
+    console.log(max);
     ratio = 256/max;
-    for(var i = 0; i < width; i++){
-        for(var j = 0; j < height; j++){
+    for(var i = 0; i < values.length; i++){
+        for(var j = 0; j < values[0].length; j++){
             colorPixel(i, j);
+            // if(grid[i][j] > 1 && grid[i][j] < 200){
+            //     console.log(grid[i][j]);
+            // }
         }
-    }
-});
-
-var createGrid = function(){
-    var mid_x = Math.floor(width/2);
-    var mid_y = Math.floor(height/2);
-    var min = Math.min(width, height);
-    var quar = Math.floor(min/4);
-    for(var i = 0; i < width; i++){
-        var valueRow = []
-        var gridRow = []
-        for(var j = 0; j < height; j++){
-            valueRow.push([(i-mid_x)/quar, (j-mid_y)/quar]);
-            gridRow.push(-1);
-        }
-        values.push(valueRow);
-        grid.push(gridRow);
     }
 }
 
@@ -63,12 +66,19 @@ var colorPixel = function(i, j){
 }
 
 var getIter = function(value){
+    if(Math.abs(value[0]) < 1 && Math.abs(value[1]) < 1){
+        // console.log('here')
+        var y = 0;
+    }
     var val = value;
     var constant = value;
     var count = 0;
     while(count < iterations && absVal(val)<=4){
         val = mandelbrotFormula(val, constant);
         count++;
+    }
+    if(count == iterations){
+        count = -1;
     }
     return count;
 }
@@ -86,18 +96,3 @@ var absVal = function(value){
     var y = value[1];
     return x*x + y*y;
 }
-
-// var iterate = function(){
-//     for(var i = 0; i < width; i++){
-//         for(var j = 0; j < height; j++){
-//             if(grid[i][j] == -1){
-//                 if(absVal(values[i][j]) > 4){
-//                     grid[i][j] = iterations;
-//                 } else{
-//                     values[i][j] = mandelbrotFormula(i, j);
-//                 }
-//             }
-//         }
-//     }
-//     iterations++;
-// }
