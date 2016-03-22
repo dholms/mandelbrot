@@ -2,22 +2,44 @@ var canvas;
 var context;
 var values = [];
 var grid = [];
-var iterations = 256;
+var startingIterations = 128;
 var ratio;
+var zoomLevel = 0;
+var startingWidth = 5;
 
 $(document).ready(function(){
     canvas = document.getElementById("c");
     context = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    createGrid([0,0], 5);
+    createGrid([0,0], startingWidth);
     colorGrid();
+
+    $(canvas).on('click',processClick);
 });
+
+var processClick = function(e){
+    zoomLevel++;
+    var x = e.offsetX;
+    var y = e.offsetY;
+    var oldvalues = values;
+    var currWidth = startingWidth/Math.pow(2, zoomLevel);
+    createGrid([values[x][y][0], values[x][y][1]], currWidth);
+    // for(var i = 0; i < values.length; i++){
+    //     for(var j = 0; j < values[0].length; j++){
+    //         if(oldvalues[i][j] !== values[i][j]){
+    //             console.log('here')
+    //         }
+    //     }
+    // }
+    colorGrid();
+}
 
 var createGrid = function(center, width){
     var height = canvas.height * width / canvas.width;
     topleft = [center[0]-width/2, center[1]+height/2];
-
+    values=[];
+    grid = [];
     var incr = width/canvas.width;
     for(var i = 0; i < canvas.width; i++){
         var valueRow = []
@@ -73,6 +95,7 @@ var getIter = function(value){
     var val = value;
     var constant = value;
     var count = 0;
+    var iterations = startingIterations * Math.pow(2, zoomLevel-1);
     while(count < iterations && absVal(val)<=4){
         val = mandelbrotFormula(val, constant);
         count++;
