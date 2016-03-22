@@ -23,7 +23,7 @@ var processClick = function(e){
     var x = e.offsetX;
     var y = e.offsetY;
     var oldvalues = values;
-    var currWidth = startingWidth/Math.pow(2, zoomLevel);
+    var currWidth = startingWidth/Math.pow(6, zoomLevel);
     createGrid([values[x][y][0], values[x][y][1]], currWidth);
     // for(var i = 0; i < values.length; i++){
     //     for(var j = 0; j < values[0].length; j++){
@@ -95,7 +95,7 @@ var getIter = function(value){
     var val = value;
     var constant = value;
     var count = 0;
-    var iterations = startingIterations * Math.pow(2, zoomLevel-1);
+    var iterations = startingIterations * Math.pow(2, zoomLevel);
     while(count < iterations && absVal(val)<=4){
         val = mandelbrotFormula(val, constant);
         count++;
